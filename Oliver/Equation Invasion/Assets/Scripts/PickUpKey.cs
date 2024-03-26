@@ -16,11 +16,15 @@ public class PickUpKey : MonoBehaviour
         m_renderer = GetComponentInParent<SpriteRenderer>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        m_renderer.enabled = false;
-        m_particle.Stop();
-        allParticles.Play();
+        if (other.gameObject.tag == "Player")
+        {
+
+
+            m_renderer.enabled = false;
+            m_particle.Stop();
+        }allParticles.Play();
         //HealthBar.GetComponent<LifeHUD>().HealPlayer();
         //Debug.Log("Hit!");
     }

@@ -31,10 +31,21 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 respawnPoint;
     public GameObject fallDetector;
 
-    private GameObject[] hearts;
-    private int lives = 3;
+    public GameObject[] hearts;
+    public float lives = 3;
+    public GameObject heart1;
+    public GameObject heart2;
+    public GameObject heart3;
+    public GameObject halfheart1;
+    public GameObject halfheart2;
+    public GameObject halfheart3;
     public GameObject background;
     public GameObject gameOverScreen;
+
+    public CollectPowerUp powerMeat;
+
+    public bool doubleJump = false;
+    public bool doubleJumpSkill = false;
 
     // Start is called before the first frame update
     void Start()
@@ -50,30 +61,74 @@ public class PlayerMovement : MonoBehaviour
         isTouchingGround = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         direction = Input.GetAxis("Horizontal");
 
+        float scaleX = transform.localScale.x;
+        float scaleY = transform.localScale.y;
+
         if (direction > 0f)
         {
             player.velocity = new Vector2(direction * speed, player.velocity.y);
-            transform.localScale = new Vector2(6.081014f, 5.968153f);
+            transform.localScale = new Vector2(Mathf.Abs(scaleX), scaleY);
         }
         else if (direction < 0f)
         {
             player.velocity = new Vector2(direction * speed, player.velocity.y);
-            transform.localScale = new Vector2(-6.081014f, 5.968153f);
-        }
-        else
-        {
-            player.velocity = new Vector2(0, player.velocity.y);
+            transform.localScale = new Vector2(-Mathf.Abs(scaleX), scaleY);
         }
 
-        if (Input.GetButtonDown("Jump") && isTouchingGround)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            player.velocity = new Vector2(player.velocity.x, jumpSpeed);
+            if (isTouchingGround)
+            {
+                player.velocity = new Vector2(player.velocity.x, jumpSpeed);
+                doubleJump = true;
+            }
+            else if (doubleJump && doubleJumpSkill)
+            {
+                player.velocity = new Vector2(player.velocity.x, jumpSpeed);
+                doubleJump = false;
+            }
         }
 
         WallSlide();
         WallJump();
 
         fallDetector.transform.position = new Vector2(transform.position.x, fallDetector.transform.position.y);
+
+        if (lives == 2.5)
+        {
+            heart3.SetActive(false);
+        }
+
+        if (lives == 2)
+        {
+            halfheart3.SetActive(false);
+            heart3.SetActive(false);
+        }
+
+        if (lives == 1.5)
+        {
+            heart2.SetActive(false);
+        }
+
+        if (lives == 1)
+        {
+            halfheart2.SetActive(false);
+            heart2.SetActive(false);
+        }
+
+        if (lives == 0.5)
+        {
+            heart1.SetActive(false);
+        }
+
+        if (lives == 0)
+        {
+            halfheart1.SetActive(false);
+            heart1.SetActive(false);
+            gameOverScreen.SetActive(true);
+            square.SetActive(false);
+            background.SetActive(false);
+        }
 
     }
 
@@ -84,14 +139,19 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.position = respawnPoint;
             lives -= 1;
-            hearts[lives].SetActive(false);
-            if (lives == 0)
-            {
-                gameOverScreen.SetActive(true);
-                square.SetActive(false);
-                background.SetActive(false);
-            }
         }
+
+        if (collision.gameObject.tag == "doubleJumpToken")
+        {
+            doubleJumpSkill = true;
+            Invoke("regularJump", 20f);
+            collision.gameObject.SetActive(false);
+        }
+    }
+
+    void regularJump()
+    {
+        doubleJumpSkill = false;
     }
 
     

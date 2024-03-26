@@ -8,6 +8,8 @@ TagManager:
   - heart
   - emptyHeart
   - halfHeart
+  - PowerMeat
+  - doubleJumpToken
   layers:
   - Default
   - TransparentFX
